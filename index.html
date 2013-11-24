@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <title>svguse</title>
+    <style type="text/css">
+        body { background: #fafcff;  margin: 0; padding: 0;}
+        svg { margin: 0; padding: 0;}
+    </style>
+
+    <script type="text/javascript" src="requestAnimationFrame.js">
+    </script>
+
+    <script type="text/javascript"><!--//
+
+    var TAU = Math.PI * 2;
+
+    var count = 360;
+
+    function init()
+    {
+        var w = (window.innerWidth|0) - 6;
+        var h =  (window.innerHeight|0) - 5;
+
+        var l = ['<svg version="1.1" width="' + w + '" height="' + h + '" preserveAspectRatio="xMidYMid meet" viewBox="' + (-w/2) + " " + (-h/2) + " " + w + " " + h + '">',
+                 '<g id="container">'];
+
+
+        for (var i=0; i < count; i++)
+        {
+            l.push('<use xlink:href="#target" x="0" y="0" />');
+        }
+
+        l.push('</g><g id="target">',
+                 '<circle cx="0" cy="0" r="32" fill="#000" stroke="#fff" stroke-width="4"/>',
+                 '<circle cx="0" cy="0" r="16" fill="#013040" stroke="#fff" stroke-width="8"/>',
+                 '</g></svg>');
+
+
+        document.body.innerHTML = l.join("");
+
+        container = document.getElementById("container");
+
+        main();
+    }
+
+    var container, startAngle = 0,
+            multAngle = 0, mult = 1;
+            multAngle2 = 0, multAngle3 = 0, mult2 = 1,
+            radius = 64;
+
+    function main()
+    {
+        var angle = startAngle;
+        var distance = 16;
+
+        var kids = container.childNodes;
+
+        for (var i=0; i < count; i++)
+        {
+            var x = Math.cos(angle) * distance;
+            var y = Math.sin(angle) * distance;
+
+
+            var ringCount = (TAU * distance / radius) * mult;
+            var step = TAU / ringCount;
+
+            distance += (radius / ringCount) * mult2;
+
+
+            var elem = kids[i];
+            elem.setAttribute("x", x);
+            elem.setAttribute("y", y);
+
+            angle+=step;
+
+        }
+
+        startAngle += 0.01;
+        multAngle -= 0.007;
+        multAngle2 += 0.013;
+        multAngle3 += 0.037;
+
+        mult = 0.75 + Math.cos(multAngle) * 0.25;
+        mult2 = 0.8 + (Math.cos(multAngle2) + Math.sin(multAngle3) * 0.9) * 0.005;
+
+
+
+        requestAnimationFrame(main);
+    }
+
+
+
+    window.onload = init;
+
+    //--></script>
+</head>
+<body>
+</body>
+</html>
