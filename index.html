@@ -5,7 +5,7 @@
     <title>svguse</title>
     <style type="text/css">
         body { background: #fafcff;  margin: 0; padding: 0;}
-        svg { margin: 0; padding: 0;}
+        .hidden { position: absolute; left: -10000px; }
     </style>
 
     <script type="text/javascript" src="requestAnimationFrame.js">
@@ -19,33 +19,22 @@
 
     function init()
     {
-        var w = (window.innerWidth|0) - 6;
-        var h =  (window.innerHeight|0) - 5;
+        width = (window.innerWidth|0) - 6;
+        height =  (window.innerHeight|0) - 5;
 
-        var l = ['<svg version="1.1" width="' + w + '" height="' + h + '" preserveAspectRatio="xMidYMid meet" viewBox="' + (-w/2) + " " + (-h/2) + " " + w + " " + h + '">',
-                 '<g id="container">'];
+        var canvas = document.getElementById("screen");
+        canvas.width = width;
+        canvas.height = height;
 
+        ctx = canvas.getContext("2d");
 
-        for (var i=0; i < count; i++)
-        {
-            l.push('<use xlink:href="#target" x="0" y="0" />');
-        }
-
-        l.push('</g><g id="target">',
-                 '<circle cx="0" cy="0" r="32" fill="#000" stroke="#fff" stroke-width="4"/>',
-                 '<circle cx="0" cy="0" r="16" fill="#013040" stroke="#fff" stroke-width="8"/>',
-                 '</g></svg>');
-
-
-        document.body.innerHTML = l.join("");
-
-        container = document.getElementById("container");
+        eye = document.getElementById("eye");
 
         main();
     }
 
-    var container, startAngle = 0,
-            multAngle = 0, mult = 1;
+    var eye, ctx, width, height, startAngle = 0,
+            multAngle = 0, mult = 1,
             multAngle2 = 0, multAngle3 = 0, mult2 = 1,
             radius = 64;
 
@@ -54,7 +43,12 @@
         var angle = startAngle;
         var distance = 16;
 
-        var kids = container.childNodes;
+        // offsets so that 0,0 is the center of the eye image
+        var xOffset = -34 + width / 2;
+        var yOffset = -34 + height / 2;
+
+        ctx.clearRect(0,0,width,height);
+
 
         for (var i=0; i < count; i++)
         {
@@ -68,13 +62,12 @@
             distance += (radius / ringCount) * mult2;
 
 
-            var elem = kids[i];
-            elem.setAttribute("x", x);
-            elem.setAttribute("y", y);
+            ctx.drawImage(eye, x + xOffset, y + yOffset);
 
             angle+=step;
 
         }
+        ctx.drawImage(eye, xOffset, yOffset);
 
         startAngle += 0.01;
         multAngle -= 0.007;
@@ -83,7 +76,6 @@
 
         mult = 0.75 + Math.cos(multAngle) * 0.25;
         mult2 = 0.8 + (Math.cos(multAngle2) + Math.sin(multAngle3) * 0.9) * 0.005;
-
 
 
         requestAnimationFrame(main);
@@ -96,5 +88,9 @@
     //--></script>
 </head>
 <body>
+<canvas id="screen">
+    <p>This demo needs a browser with canvas support.</p>
+</canvas>
+<img id="eye" class="hidden" src="eye.png" />
 </body>
 </html>
